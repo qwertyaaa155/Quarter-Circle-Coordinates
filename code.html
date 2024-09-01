@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quarter Circle Coordinates</title>
+    <style>
+        table {
+            border-collapse: collapse;
+            width: auto;
+        }
+        th, td {
+            border: 1px solid black;
+            text-align: center;
+            padding: 0;
+            width: 20px; /* Adjust the width to make cells square */
+            height: 20px; /* Adjust the height to make cells square */
+        }
+        .black {
+            background-color: black;
+        }
+    </style>
+    <script>
+        function calculateCoordinates() {
+            const radius = parseFloat(document.getElementById('radius').value);
+            let grid = '<table>';
+            let series = [];
+            let visited = Array.from({ length: radius + 1 }, () => Array(radius + 1).fill(false));
+
+            function countContiguous(x, y) {
+                if (x < 0 || y < 0 || x > radius || y > radius || visited[y][x]) return 0;
+                const distance = Math.sqrt(x * x + y * y);
+                if (Math.round(distance) !== radius) return 0;
+
+                visited[y][x] = true;
+                return 1 + countContiguous(x + 1, y) + countContiguous(x - 1, y) + countContiguous(x, y + 1) + countContiguous(x, y - 1);
+            }
+
+            for (let y = 0; y <= radius; y++) {
+                grid += '<tr>';
+                for (let x = 0; x <= radius; x++) {
+                    const distance = Math.sqrt(x * x + y * y);
+                    if (Math.round(distance) === radius) {
+                        grid += '<td class="black"></td>';
+                        if (!visited[y][x]) {
+                            series.push(countContiguous(x, y));
+                        }
+                    } else {
+                        grid += '<td></td>';
+                    }
+                }
+                grid += '</tr>';
+            }
+            grid += '</table>';
+            document.getElementById('grid').innerHTML = grid;
+            document.getElementById('series').innerText = 'Series: ' + series.join(', ');
+        }
+    </script>
+</head>
+<body>
+    <h1> Quarter Circle Coordinates </h1>
+    <label for="radius">Enter Radius:</label>
+    <input type="number" id="radius" name="radius" min="1" required>
+    <button onclick="calculateCoordinates()">Calculate</button>
+    <div id="grid"></div>
+    <p id="series"></p>
+    <footer>
+        <p>Code made by Mark using Copilot</p>
+    </footer>
+</body>
+</html>
